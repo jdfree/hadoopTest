@@ -23,15 +23,15 @@ Instructions
 Example output: (Note: your numbers may vary)
 
 
-2007.runescape.wikia.com    0.52361506
-247wallst.com		    0.7509867
-3boysandadog.com	    0.6208182
-411mania.com		    0.61947024
-abqmugshots.com		    0.4965596
-accidentalepicurean.com	    0.648543
-acultivatednest.com	    0.6184491
-adventuretime.wikia.com	    0.6283893
-againstallgrain.com	    0.6570423
+* 2007.runescape.wikia.com    0.52361506
+* 247wallst.com		    0.7509867
+* 3boysandadog.com	    0.6208182
+* 411mania.com		    0.61947024
+* abqmugshots.com		    0.4965596
+* accidentalepicurean.com	    0.648543
+* acultivatednest.com	    0.6184491
+* adventuretime.wikia.com	    0.6283893
+* againstallgrain.com	    0.6570423
 
 Feel Free to ask questions. We're here to help.
 jpowers@sovrn.com
