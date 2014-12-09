@@ -17,7 +17,7 @@ Instructions
 * A sample data file can be found in src/main/data/data.tsv
 * Desired output is a file of domains extracted from the 3rd (NormURL) column with an average score (2nd column) for each domain.
 * When finished, please create a pull request back to this repository.
-
+* Feel free to add any other dependencies that you like. The pom is already setup to build a 'fat' jar to include them.
 
 ===========
 
