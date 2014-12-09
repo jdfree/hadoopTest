@@ -18,6 +18,13 @@ Instructions
 * Desired output is a file of domains extracted from the 3rd (NormURL) column with an average score (2nd column) for each domain.
 * When finished, please create a pull request back to this repository.
 
+
+===========
+
+Desired output
+* column 1: The domain, extracted from the NormURL column of the data
+* column 2: An average of the Score column for the domain.
+
 ===========
 
 Example output: (Note: your numbers may vary)
