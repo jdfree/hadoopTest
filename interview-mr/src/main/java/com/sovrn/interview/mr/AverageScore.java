@@ -58,6 +58,9 @@ public class AverageScore {
         protected void map(Object key, Text value, Mapper<Object, Text, Text, FloatWritable>.Context context)
                 throws IOException, InterruptedException {
             String[] values = value.toString().split("\t");
+            
+            if(values.length < 4)
+            	return;
 
             try {
                 String domain = new URI(values[3]).getHost();
