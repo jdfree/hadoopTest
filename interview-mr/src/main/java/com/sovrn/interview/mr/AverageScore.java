@@ -1,6 +1,8 @@
 package com.sovrn.interview.mr;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -19,7 +21,7 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
  * 2.) The score is the 2nd column of the data file
  * 3.) The normalized URL is the 4th column of the data file.
  * 
- * The tab seperated data file can be found under src/main/data/data.tsv
+ * The tab separated data file can be found under src/main/data/data.tsv
  * 
  * Example data:
  *
@@ -31,13 +33,15 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
  * navigation      0.615594        http://411mania.com/games/dragon-fantasy-book-one-psn-review/   http://411mania.com/games/dragon-fantasy-book-one-psn-review/   Sovrn
  */
 public class AverageScore {
+
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf, "Interview Averaging");
         job.setJarByClass(AverageScore.class);
         job.setMapperClass(AverageScoreMapper.class);
         job.setReducerClass(AverageScoreReducer.class);
-        // TODO: Finish the key and output setup
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(FloatWritable.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
         FileOutputFormat.setOutputPath(job, new Path(args[1]));
@@ -47,22 +51,49 @@ public class AverageScore {
 
     public static class AverageScoreMapper extends Mapper<Object, Text, Text, FloatWritable> {
 
+        private final FloatWritable number = new FloatWritable();
+        private final Text domainText = new Text();
+
         @Override
         protected void map(Object key, Text value, Mapper<Object, Text, Text, FloatWritable>.Context context)
                 throws IOException, InterruptedException {
-            // TODO : Implement the mapping phase
-            
+            String[] values = value.toString().split("\t");
+
+            try {
+                String domain = new URI(values[3]).getHost();
+                number.set(Float.parseFloat(values[1]));
+
+                if(domain != null)
+                    domainText.set(domain);
+                    context.write(domainText, number);
+
+            } catch (URISyntaxException | NumberFormatException e) {
+                // Invalid data - either not a clean URL or the value
+                // wasn't a number (as in the column header line). No
+                // error reporting requirement, so do nothing for now.
+            }
         }
 
     }
 
     public static class AverageScoreReducer extends Reducer<Text, FloatWritable, Text, FloatWritable> {
 
+        private final FloatWritable average = new FloatWritable();
+
         @Override
         protected void reduce(Text key, Iterable<FloatWritable> values,
                 Reducer<Text, FloatWritable, Text, FloatWritable>.Context context) throws IOException,
                 InterruptedException {
-            // TODO: Implemnet the reducer phase
+            float sum = 0f;
+            int count = 0;
+
+            for (FloatWritable value : values) {
+                sum += value.get();
+                count++;
+            }
+
+            average.set(count > 0 ? sum / count : 0f);
+            context.write(key, average);
         }
 
     }
