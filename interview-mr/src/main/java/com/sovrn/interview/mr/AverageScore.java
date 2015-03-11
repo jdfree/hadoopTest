@@ -35,6 +35,12 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 public class AverageScore {
 
     public static void main(String[] args) throws Exception {
+        if(args.length < 2)
+            System.exit(2);
+        System.exit(mapReduce(args[0], args[1]));
+    }
+
+    public static int mapReduce(String inputPath, String outputPath) throws Exception {
         Configuration conf = new Configuration();
         Job job = Job.getInstance(conf, "Interview Averaging");
         job.setJarByClass(AverageScore.class);
@@ -43,10 +49,10 @@ public class AverageScore {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(FloatWritable.class);
 
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        FileInputFormat.addInputPath(job, new Path(inputPath));
+        FileOutputFormat.setOutputPath(job, new Path(outputPath));
 
-        System.exit(job.waitForCompletion(true) ? 0 : 1);
+        return job.waitForCompletion(true) ? 0 : 1;
     }
 
     public static class AverageScoreMapper extends Mapper<Object, Text, Text, FloatWritable> {
@@ -66,14 +72,16 @@ public class AverageScore {
                 String domain = new URI(values[3]).getHost();
                 number.set(Float.parseFloat(values[1]));
 
-                if(domain != null)
+                if(domain != null) {
                     domainText.set(domain);
                     context.write(domainText, number);
+                }
 
-            } catch (URISyntaxException | NumberFormatException e) {
-                // Invalid data - either not a clean URL or the value
-                // wasn't a number (as in the column header line). No
-                // error reporting requirement, so do nothing for now.
+            } catch (URISyntaxException e) {
+                // Invalid data - not a clean URL. No error reporting requirement, so ignore for now.
+            } catch (NumberFormatException e) {
+                // Invalid data - value wasn't a number (as in the column header line). 
+            	// No error reporting requirement, so ignore for now.
             }
         }
 
